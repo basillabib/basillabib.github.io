@@ -326,7 +326,7 @@
     /* ── CTA ── */
     .cta-section {
       padding:7rem 4rem; background:var(--cream);
-      text-align:center; position:relative;
+      text-align:center; position:relative; overflow:hidden;
     }
     /* rangoli corner ornaments */
     .cta-section::before, .cta-section::after {
@@ -422,6 +422,21 @@
       from { opacity:0; } to { opacity:1; }
     }
 
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display:none; flex-direction:column; gap:5px;
+      background:none; border:none; padding:6px;
+      cursor:pointer; z-index:300; position:relative;
+    }
+    .hamburger span {
+      display:block; width:24px; height:2px;
+      background:var(--cream); border-radius:2px;
+      transition:transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
     /* ── RESPONSIVE ── */
     @media (max-width:960px) {
       nav { padding:1rem 2rem; }
@@ -443,7 +458,32 @@
     @media (max-width:600px) {
       .services-grid { grid-template-columns:1fr; }
       .hero-mandala { opacity:0.07; width:90vw; height:90vw; right:-25%; }
-      .nav-links li:not(:last-child) { display:none; }
+
+      .hamburger { display:flex; }
+      .nav-links {
+        position:fixed; inset:0;
+        flex-direction:column; justify-content:center; align-items:center;
+        gap:2.5rem; background:var(--deep-indigo);
+        transform:translateX(100%); transition:transform 0.4s ease;
+        z-index:150;
+      }
+      .nav-links.open { transform:translateX(0); }
+      .nav-links li { display:flex !important; }
+      .nav-links a { font-size:1.1rem; letter-spacing:0.15em; }
+    }
+
+    @media (max-width:480px) {
+      nav { padding:1rem 1.5rem; }
+      nav.scrolled { padding:0.6rem 1.5rem; }
+      .hero-content { padding:2rem 1.5rem; }
+      .hero-actions { flex-direction:column; align-items:stretch; gap:0.75rem; }
+      .btn-primary, .btn-ghost { text-align:center; }
+      .tagline-section { padding-top:3rem; padding-bottom:2.5rem; }
+      .services-section { padding-top:2rem; padding-bottom:4rem; }
+      .quote-section { padding-top:4rem; padding-bottom:4rem; }
+      .cta-section { padding-top:4rem; padding-bottom:4rem; }
+      .tagline-section, .services-section, .quote-section,
+      .cta-section, footer { padding-left:1.5rem; padding-right:1.5rem; }
     }
   </style>
 </head>
@@ -452,11 +492,14 @@
 <!-- NAV -->
 <nav id="nav">
   <a href="#" class="nav-logo">The SAFL <span>Art Project</span></a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#philosophy">Philosophy</a></li>
     <li><a href="#contact" class="nav-cta">Connect</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -723,6 +766,22 @@ function drawMandala(el, color = 'white') {
 drawMandala(document.getElementById('heroMandala'), 'white');
 drawMandala(document.getElementById('quoteMandala'), 'white');
 drawMandala(document.getElementById('quoteMandala2'), 'white');
+
+/* ── MOBILE NAV ── */
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  const open = hamburger.classList.toggle('open');
+  navLinks.classList.toggle('open');
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    navLinks.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
 
 /* ── CARD SCROLL REVEAL ── */
 const cards = document.querySelectorAll('.service-card');
